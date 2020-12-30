@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon node index.js",
-    "heroku-depoy": "git push heroku master",
+    "heroku-deploy": "git push heroku master",
     "heroku-logs": "heroku logs --tail"
   },
   "author": "",
