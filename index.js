@@ -27,20 +27,27 @@ admin.initializeApp({
 const db = admin.firestore();
 
 /**
- * Endpoints
+ * Endpoints - get posts
  * */
 
-app.get('/posts', async (req, res) => {
-    res.set('Access-Control-Allow-Origin', '*')
+app.get('/posts', async (request, response) => {
+    response.set('Access-Control-Allow-Origin', '*')
     let posts = []
 
     const snapshot = await db.collection('posts').orderBy('date', 'desc').get();
     snapshot.forEach((doc) => {
-        console.log('doc: ', doc);
         posts.push(doc.data());
     });
+    response.send(posts)
+})
 
-    res.send(posts)
+/**
+ * Endpoints - create post
+ * */
+
+app.get('/createPosts', async (request, response) => {
+    response.set('Access-Control-Allow-Origin', '*')
+    response.send('createPosts')
 })
 
 app.listen(port, () => {
