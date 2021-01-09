@@ -5,6 +5,11 @@
 const express = require('express')
 const admin = require('firebase-admin')
 
+/**
+ * Config - env var
+ * */
+
+require('dotenv').config()
 
 /**
  * Config - Express
@@ -18,7 +23,7 @@ const port = process.env.PORT || 3000
  * Config - Firebase
  * */
 
-const serviceAccount = require('./serviceAccountKey.json')
+const serviceAccount = require('./config')
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
