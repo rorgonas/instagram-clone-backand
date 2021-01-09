@@ -1,4 +1,7 @@
 # quasagram-clone-backend
 
-## dev
-kill $(lsof -t -i:3000) #Kill the process listening on port 3000
+## dev - troubleshoot
+Remove the process listening on port 3000
+```
+kill -9 $(lsof -t -i :3000)
+```
