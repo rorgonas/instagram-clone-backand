@@ -29,8 +29,6 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 
-console.log('service account: ', serviceAccount)
-
 const db = admin.firestore();
 
 /**
