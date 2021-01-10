@@ -61,7 +61,7 @@ app.get('/posts', async (req, res) => {
 app.post('/createPost', async (req, res) => {
     res.set('Access-Control-Allow-Origin', '*')
 
-    let uuuid = UUID()
+    let uuid = UUID()
     let fields = {}
     let fileData = {}
     let busboy = new Busboy({ headers: req.headers })
@@ -86,7 +86,7 @@ app.post('/createPost', async (req, res) => {
               metadata: {
                   contentType: fileData.mimetype,
                   metadata: {
-                      firebaseStorageDownloadTokens: uuuid
+                      firebaseStorageDownloadTokens: uuid
                   }
               }
           },
@@ -103,7 +103,7 @@ app.post('/createPost', async (req, res) => {
                 caption: fields.caption,
                 location: fields.location,
                 date: parseInt(fields.date, 10),
-                imageUrl: `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${uploadedFile.name}?alt=media&token=${uuuid}`
+                imageUrl: `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${uploadedFile.name}?alt=media&token=${uuid}`
             })
               .then(response => {
                   res.send('Post added: ' + fields.id)
