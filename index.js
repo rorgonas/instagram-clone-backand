@@ -10,6 +10,8 @@ let path = require('path')
 let os = require('os')
 let fs = require('fs')
 let UUID = require('uuid-v4')
+const cors = require('cors');
+let webpush = require('web-push')
 
 /**
  * Config - env var
@@ -23,7 +25,7 @@ require('dotenv').config()
 
 const app = express()
 const port = process.env.PORT || 3000
-
+app.use(cors({ origin: 'http://localhost:8081' }));
 
 /**
  * Config - Firebase
@@ -39,12 +41,28 @@ admin.initializeApp({
 const db = admin.firestore();
 let bucket = admin.storage().bucket();
 
+
+/**
+ * Config - web-push
+ **/
+
+// VAPID keys should only be generated only once.
+const vapidKeys = {
+    publicKey: process.env.VAPID_PUBLIC_KEY,
+    privateKey: process.env.VAPID_PRIVATE_KEY
+}
+
+webpush.setVapidDetails(
+  'mailto:test@test.com',
+  vapidKeys.publicKey,
+  vapidKeys.privateKey
+);
+
 /**
  * Endpoints - get posts
  * */
 
 app.get('/posts', async (req, res) => {
-    res.set('Access-Control-Allow-Origin', '*')
     let posts = []
 
     const snapshot = await db.collection('posts').orderBy('date', 'desc').get();
@@ -59,8 +77,6 @@ app.get('/posts', async (req, res) => {
  * */
 
 app.post('/createPost', async (req, res) => {
-    res.set('Access-Control-Allow-Origin', '*')
-
     let uuid = UUID()
     let fields = {}
     let fileData = {}
@@ -107,10 +123,44 @@ app.post('/createPost', async (req, res) => {
             })
               .then(response => {
                   res.send('Post added: ' + fields.id)
+                  sendPushNotification()
               })
               .catch(err => {
                   res.send('Unable to add post. Error: ' + err)
               });
+        }
+
+        function sendPushNotification() {
+            // This is the same output of calling JSON.stringify on a PushSubscription
+
+            db.collection('subscriptions').get()
+              .then((snapshot) => {
+                  snapshot.forEach((doc) => {
+                      const subscription = doc.data()
+                      const { endpoint } = subscription
+                      const { auth, p256dh } = subscription.keys
+
+                      const pushSubscription = {
+                          endpoint,
+                          keys: {
+                              auth,
+                              p256dh
+                          }
+                      }
+                      console.log('pushSubscription: ', pushSubscription)
+                      const pushContent = {
+                          title: 'New Quasagram post',
+                          body: 'A new post has been added! Check it out!'
+                      }
+                      webpush.sendNotification(pushSubscription, JSON.stringify(pushContent))
+                        .then((success) => {
+                            console.log('Sent push successfully: ', success);
+                        })
+                        .catch((err) => {
+                            console.log('Unable to sent push successfully:', err);
+                        });
+                  })
+              })
         }
     })
 
@@ -119,8 +169,14 @@ app.post('/createPost', async (req, res) => {
      * */
 
     app.post('/createSubscription', (req,res) => {
-        res.set('Access-Control-Allow-Origin', '*')
-        res.send(req.query)
+        db.collection('subscriptions').add(req.query)
+          .then((docRef) => {
+              console.log('docRef ', docRef)
+              res.send({
+                message: 'Subscription added!',
+                postData: req.query
+              })
+        })
     })
 
     req.pipe(busboy);
