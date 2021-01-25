@@ -117,6 +117,4 @@ app.post('/createPost', async (req, res) => {
     req.pipe(busboy);
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
-})
+app.listen(port)

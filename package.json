@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon node index.js",
     "heroku-deploy": "git push heroku master",
-    "heroku-logs": "heroku logs --tail"
+    "heroku-logs": "heroku logs --tail",
+    "web-push": "web-push"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +18,7 @@
     "express": "^4.17.1",
     "firebase-admin": "^9.4.2",
     "nodemon": "^2.0.6",
-    "uuid-v4": "^0.1.0"
+    "uuid-v4": "^0.1.0",
+    "web-push": "^3.4.4"
   }
 }
