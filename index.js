@@ -114,6 +114,15 @@ app.post('/createPost', async (req, res) => {
         }
     })
 
+    /**
+     * Endpoints - create subscription
+     * */
+
+    app.post('/createSubscription', (req,res) => {
+        res.set('Access-Control-Allow-Origin', '*')
+        res.send(req.query)
+    })
+
     req.pipe(busboy);
 })
 
