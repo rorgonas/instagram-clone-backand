@@ -25,7 +25,9 @@ require('dotenv').config()
 
 const app = express()
 const port = process.env.PORT || 3000
-app.use(cors({ origin: 'http://localhost:8081' }));
+const host = process.env.PORT ? process.env.FIREBASE_HOST : 'http://localhost:8081'
+
+app.use(cors({ origin: host }));
 
 /**
  * Config - Firebase
@@ -150,7 +152,8 @@ app.post('/createPost', async (req, res) => {
                       console.log('pushSubscription: ', pushSubscription)
                       const pushContent = {
                           title: 'New Quasagram post',
-                          body: 'A new post has been added! Check it out!'
+                          body: 'A new post has been added! Check it out!',
+                          openUrl: '/#/'
                       }
                       webpush.sendNotification(pushSubscription, JSON.stringify(pushContent))
                         .then((success) => {
