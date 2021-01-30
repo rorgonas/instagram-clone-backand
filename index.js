@@ -25,7 +25,7 @@ require('dotenv').config()
 
 const app = express()
 const port = process.env.PORT || 3000
-const host = process.env.PORT ? process.env.FIREBASE_HOST : 'http://localhost:8081'
+const host = process.env.PORT ? process.env.HOST_PROD : process.env.HOST_DEV
 
 app.use(cors({ origin: host }));
 
