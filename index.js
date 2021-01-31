@@ -83,6 +83,7 @@ app.post('/createPost', async (req, res) => {
     let fields = {}
     let fileData = {}
     let busboy = new Busboy({ headers: req.headers })
+    let imageUrl = ''
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype)
@@ -116,12 +117,13 @@ app.post('/createPost', async (req, res) => {
         )
 
         function createDocument(uploadedFile) {
+            imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${uploadedFile.name}?alt=media&token=${uuid}`
             db.collection('posts').doc(fields.id).set({
                 id: fields.id,
                 caption: fields.caption,
                 location: fields.location,
                 date: parseInt(fields.date, 10),
-                imageUrl: `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${uploadedFile.name}?alt=media&token=${uuid}`
+                imageUrl: imageUrl
             })
               .then(response => {
                   res.send('Post added: ' + fields.id)
@@ -153,7 +155,8 @@ app.post('/createPost', async (req, res) => {
                       const pushContent = {
                           title: 'New Quasagram post',
                           body: 'A new post has been added! Check it out!',
-                          openUrl: '/#/'
+                          openUrl: '/#/',
+                          imageUrl: imageUrl
                       }
                       webpush.sendNotification(pushSubscription, JSON.stringify(pushContent))
                         .then((success) => {
