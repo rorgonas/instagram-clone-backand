@@ -5,7 +5,7 @@ Remove the process listening on port 3000
 ```
 kill -9 $(lsof -t -i :3000)
 ```
-## pus notification subscription
+## push notification subscription
 ### generate key
 ```
 npm run web-push generate-vapid-keys
